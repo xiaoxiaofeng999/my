@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <form action="{% url 'myapp:create_collections' %}" method="post">
+        {% csrf_token %}
+        <input type="text" placeholder="请输入用户id" name="user_name">
+        <br>
+        <input type="text" placeholder="请输入博客id" name="blog_id">
+        <br>
+        <input type="submit" value="提交" id="submit">
+    </form>
+</body>
+
+</html>

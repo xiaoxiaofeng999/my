@@ -1,0 +1,53 @@
+{% extends 'base/base_main.html' %}
+
+{% load static %}
+
+{% block css %}
+    {{ block.super }}
+
+{% endblock %}
+
+
+{% block content %}
+    {{ block.super }}
+    <div id="main" role="main" class="cf">
+        <!-- posts list -->
+        <div id="posts-list" class="cf">
+            {% for i in allarticle %}
+            <article class="cf">
+					<div class="feature-image">
+{#						<a href="{% url 'blog:detail' id=i.id %}"><img src="#" alt="Thumbnail" /></a>#}
+					</div>
+					<div class="entry-title">
+						<a href="{% url 'blog:detail' id=i.id %}" class="post-heading">{{ i.title }}</a>
+						<div class="entry-date">{{ i.category.name }}&nbsp;&nbsp;{{ i.created_time|date:'Y-m-d' }}</div>
+						<a href="{% url 'blog:detail' id=i.id %}" class="comments">{{ i.record }}</a>
+					</div>
+					<div class="excerpt">
+                        {{ i.content|truncatechars:100 }}
+                    </div>
+					<a href="{% url 'blog:detail' id=i.id %}" class="action-button">继续阅读</a>
+				</article>
+            {% endfor %}
+
+        </div>
+        <!-- ENDS posts list -->
+            <!-- sidebar -->
+        <aside id="sidebar">
+            <ul>
+                <li class="block">
+                    <h4 class="heading">最新推荐</h4>
+                   <ul>
+                   {% for j in hot %}
+                        <li><a href="{% url 'blog:detail' id=j.id %}" target="_blank" title="{{ j.title }}">{{ j.title }}</a></li>
+                   {% endfor %}
+
+                   </ul>
+                </li>
+            </ul>
+
+        </aside>
+        <!-- ENDS sidebar -->
+    </div>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<body>
+    <form action="{% url 'myapp:get_blogs' %}" method="post">
+        {% csrf_token %}
+        <input type="text" placeholder="请输入博客id" name="blog_id">
+        <br>
+
+        <input type="submit" value="搜索" id="submit">
+    </form>
+</body>
+
+</html>

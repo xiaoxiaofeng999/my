@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{{ title }}</title>
+    {% block css %}
+        <link rel="stylesheet" href="{% static 'css/css/main.css' %}" />
+		<link rel="stylesheet" href="{% static 'css/css/style.css' %}" />
+		<link rel="stylesheet" href="{% static 'css/css/nivo-slider.css' %}" />
+		<link rel="stylesheet" media="all" href="{% static 'css/css/responsive.css' %}" />
+        <!-- GOOGLE FONTS -->
+{#		<link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,300,200' rel='stylesheet' type='text/css' />#}
+{#	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+    {% endblock %}
+</head>
+
+<body>
+
+{% block top %}
+{% endblock %}
+
+
+
+{% block content %}
+{% endblock %}
+
+{% block qita %}
+{% endblock %}
+
+{% block right %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+</body>
+{% block js %}
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/js/modernizr-2.6.1.min.js' %}"></script>
+
+{% endblock %}
+</html>

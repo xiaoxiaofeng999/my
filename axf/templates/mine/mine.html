@@ -1,0 +1,90 @@
+{% extends 'base/base_main.html' %}
+{% load static %}
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'axf/mine/css/mine.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="mine">
+        <div class="fixed">
+            {#            <span class="glyphicon glyphicon-user"></span>#}
+            {#        登录状态下的头像和用户名#}
+            {% if is_login %}
+                <span>
+                    <img src="{{ icon }}" alt="">
+                 </span>
+                <p>{{ u_name }}</p>
+            {% else %}
+                {#                未登录下的头像和用户名#}
+                <span class="glyphicon glyphicon-user"></span>
+                <p class="not_login">
+                    <a href="{% url 'axf:login' %}">未登录</a>
+                </p>
+            {% endif %}
+
+            {#            <P>注册</P>#}
+            <p class="level">
+                <span class="glyphicon glyphicon-fire"></span>
+                <span>等级</span>
+            </p>
+            <p class="collect">
+                <span class="glyphicon glyphicon-heart"></span>
+                <span>收藏</span>
+            </p>
+        </div>
+        {% if  not is_login %}
+            <div id="regis">
+                <a href="{% url 'axf:register' %}">注册</a>
+            </div>
+        {% endif %}
+
+        <div class="mine_info">
+            <p>
+                我的订单
+                <a href="">查看全部&gt;&gt;</a>
+            </p>
+
+            <div id="nav">
+                <ul>
+                    {% for i in btns1 %}
+                        <li>
+                            <dl>
+                                <dt>
+                                    <span class="{{ i.class_name }}"></span>
+                                </dt>
+                                <dd>{{ i.btn }}</dd>
+
+                            </dl>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <menu>
+                <ul>
+                    {% for i in btns %}
+                        <li>
+                            <dl>
+                                <dt>
+                                    <span class="{{ i.class_name }}"></span>
+                                </dt>
+                                <dd>{{ i.btn }}</dd>
+                            </dl>
+                        </li>
+                    {% endfor %}
+
+
+                </ul>
+            </menu>
+            {% if is_login %}
+                <p>
+                    <a href="{% url 'axf:logout' %}">退出</a>
+                </p>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

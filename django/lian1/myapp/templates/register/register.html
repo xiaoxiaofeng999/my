@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="container">
+            <form action="{% url 'myapp:register' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="exampleInputEmail1">用户名</label>
+                    <input type="text" class="form-control" id="uid" name="u_name">
+                </div>
+
+                {#            提示信息#}
+                <p class="help-block" id="uname_msg"></p>
+
+                <div class="form-group">
+                    <label for="exampleInputPassword1">密码</label>
+                    <input type="password" class="form-control" id="u_pwd" name="pwd">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">确认密码</label>
+                    <input type="password" class="form-control" id="u_confirm_pwd" name="confirm_pwd">
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleInputPassword1">邮箱</label>
+                    <input type="email" class="form-control" id="e_id" name="email">
+                </div>
+
+                <p class="help-block">{{ help_msg }}</p>
+                <button type="submit" class="btn btn-success btn-block">注册</button>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

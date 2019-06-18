@@ -1,0 +1,35 @@
+{% extends 'base/base_main.html' %}
+{% load static %}
+{% load blog_tags %}
+
+{% block content %}
+
+
+    <div id="main" role="main" class="cf">
+    <div class="page-content">
+        <h4>您的位置是: <a href="{% url 'blog:home' %}">首页</a> &nbsp;&nbsp; >> <a href="{% url 'blog:home' %}list-{{ show.category.id }}">{{ show.category.name }}</a>  &nbsp;&nbsp; >> </h4>
+        <hr style="height:4px;border:none;border-top:3px solid #CC3333;" />
+    </div>
+    <div class="heading">
+    <h3>{{ show.title }}</h3>
+    <p></p>
+    <p><span class="glyphicon glyphicon-user"></span><span>{{ show.user }}</span>&nbsp;&nbsp;&nbsp;
+
+        <span class="glyphicon glyphicon-time">{{ show.created_time|date:'Y-m-d'}}</span></p>
+    <p>{{ show.content }}</p>
+    {% if previous_blog %}
+        <p>上一篇: <a href="{% url 'blog:detail' id=previous_blog.id %}">{{ previous_blog.title }}</a></p>
+        {% else %}
+        <p>上一篇:无</p>
+    {% endif %}
+    {% if next_blog %}
+        <p>下一篇: <a href="{% url 'blog:detail' id=next_blog.id %}">{{ next_blog.title }}</a></p>
+        {% else %}
+        <p>下一篇:无</p>
+    {% endif %}
+
+</div>
+    </div>
+
+
+{%  endblock%}

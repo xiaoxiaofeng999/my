@@ -1,0 +1,32 @@
+{% extends 'base/base_main.html' %}
+
+{% load static %}
+{% load blog_tags %}
+
+
+
+{% block content %}
+{{ block.super }}
+    <div id="main" role="main" class="cf">
+    <!-- tagline -->
+        <div class="taglines">心情随笔</div>
+        <!-- ENDS tagline -->
+        <ul class="feature">
+        <li>
+            <ul>
+                {% for article in suibi_article %}
+                    <li>
+                        <a href="{% url 'blog:detail' id=article.id %}" target="_blank" title="{{ article.title }}">{{ article.title }}</a>
+                        <div class="excerpt2">
+                        {{ article.content|truncatechars:100 }}
+                    </div>
+                    <hr>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </li>
+        </ul>
+
+    </div>
+{% endblock %}

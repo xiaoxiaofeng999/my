@@ -1,0 +1,54 @@
+body {
+    /*距离顶部的距离*/
+    /*padding-top: 20px;*/
+    font-family: SimHei;
+    color: #444;
+
+}
+.main-nav {
+    margin-top: 11px;
+    max-width: 94%;
+    background: #ff5500;
+    margin-left: 3%;
+    margin-right: 3%;
+    overflow: hidden;
+    zoom: 1;
+}
+.logo li{
+        list-sytle:none;
+
+}
+.logo{
+    display: inline-block;
+    /*background: blue;*/
+    float: left;
+    /*width: 150px;*/
+    /*height: 45px;*/
+    /*text-align: center;*/
+    /*line-height: 45px;*/
+    /*margin-left: 20px;*/
+}
+.logo span{
+    margin-left: 0px;
+}
+#home_id li{
+    list-style: none;
+}
+
+.daohang li{
+    display: inline-block;
+    /*background: #008200;*/
+    float: left;
+    /*width: 100px;*/
+    /*height: 45px;*/
+    /*text-align: center;*/
+    /*line-height: 45px;*/
+    /*margin-left: 30px;*/
+
+}
+.daohang {
+    /*导航距上 左右 下的距离*/
+    /*border-bottom: 2px solid #e7e7e7;*/
+    max-width: 70%;
+    background: aqua;
+}

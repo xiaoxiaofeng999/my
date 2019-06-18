@@ -1,0 +1,70 @@
+{% extends  'base/base.html' %}
+{% load static %}
+
+{% load blog_tags %}
+{% block css %}
+    {{ block.super }}
+    {#    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">#}
+{% endblock %}
+
+{% block top %}
+    <!-- TOP -->
+    <div id="top-page" class="cf">
+        <!-- search -->
+        <form method="get" id="searchform" action="#" class="cf"/>
+        <input type="submit" id="searchsubmit" value=" "/>
+        <input type="text" value="" name="s" id="s" placeholder="Search"/>
+        </form>
+        <!-- ENDS search -->
+    </div>
+    <!-- HEADER -->
+    <header class="cf">
+        <!-- nav -->
+        <nav class="cf">
+            <!-- left nav -->
+            <ul id="left-nav" class="sf-menu">
+                <li><a href="{% url 'blog:suibi' %}">心情随笔</a></li>
+                <li><a href="{% url 'blog:study' %}">学习日志</a></li>
+                <li class="current-menu-item"><a href="{% url 'blog:home' %}">首页</a></li>
+            </ul>
+            <!-- ends left nav -->
+
+            <!-- right nav -->
+            <ul id="right-nav" class="sf-menu">
+                <li><a href="{% url 'blog:liuyian' %}">Blog留言</a></li>
+                <li><a href="{% url 'blog:mine' %}">关于我</a></li>
+            </ul>
+            <!-- ENDS right nav -->
+
+        </nav>
+        <!-- nav -->
+
+        <!-- logo -->
+        <div id="logo">
+            <a href="#"><img src="{% static 'img/logo.png' %}" alt=""/></a>
+        </div>
+        <!-- ENDS logo -->
+
+
+    </header>
+    <!-- ENDS HEADER -->
+
+    <!-- ENDS TOP -->
+
+{% endblock %}
+
+
+{% block js %}
+    {{ block.super }}
+    <script src="{% static 'js/js/jquery-1.8.0.min.js' %}"></script>
+    <script src="{% static 'js/js/superfish-1.4.8/js/hoverIntent.js' %}"></script>
+    <script src="{% static 'js/js/superfish-1.4.8/js/supersubs.js' %}"></script>
+    <script src="{% static 'js/js/jquery.nivo.slider.js' %}"></script>
+    <script src="{% static 'js/js/tabs.js' %}"></script>
+    <script src="{% static 'js/js/css3-mediaqueries.js' %}"></script>
+    <script src="{% static 'js/js/jquery.isotope.min.js' %}"></script>
+    <script src="{% static 'js/js/custom.js' %}"></script>
+{% endblock %}
+
+
+

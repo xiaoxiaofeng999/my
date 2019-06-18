@@ -1,0 +1,22 @@
+{% extends 'base/base_main.html' %}
+{% load static %}
+{% load blog_tags %}
+
+{% block content %}
+
+    <div class="location">您现在的位置是:
+        <a href="{% url 'blog:home' %}list-{{ show.category.id }}">{{ show.category.name }}</a>
+    <span class="current">正文</span>
+
+    </div>
+    <div>
+    <h1 class="title">{{ show.title }}</h1>
+    <span class="item">{{ show.user }}</span>
+    <span class="item">{{ show.created_time}}</span>
+        <article class="article_content">
+            {{ show.content|safe }}
+        </article>
+
+    </div>
+
+{% endblock %}

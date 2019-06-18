@@ -1,0 +1,26 @@
+{% extends 'base/base_main.html' %}
+
+{% load static %}
+{% load blog_tags %}
+
+{% block js %}
+    {{ block.super}}
+    {#    清空所有的li的active class#}
+    <script>
+        $('li').removeClass("active");
+        $("#liuyian_id").addClass("active");
+    </script>
+
+
+{% endblock %}
+
+{% block content %}
+<h2>哈哈哈</h2>
+
+{#    <ul>#}
+{#    {% for i in allarticle %}#}
+{#        <li>{{ i.title }}</li>#}
+{#    {% endfor %}#}
+
+{#    </ul>#}
+{% endblock %}
