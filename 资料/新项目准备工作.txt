@@ -1,0 +1,142 @@
+从新开始一个新项目准备工作
+查看mysql数据库用户：select user,host from mysql.user
+
+1.创建对应的虚拟环境（也可利用以前原有的虚拟环境）
+	1.查看虚拟环境 ：workon
+	2.应用某一虚拟环境 ：workon 虚拟环境名字
+	3.创建虚拟环境：mkvirtualenv -p /usr/bin/python3.5 hz1805(虚拟环境名字)
+	4.退出虚拟环境：deactivate
+	5.删除虚拟环境：rmvirtualenv hz1805(虚拟环境名字)
+	
+2.安装 django （第一次使用）
+	1、若pip版本较老,可以先升级:  pip install --upgrade pip
+	2.pip install django==1.11.7（也有其他的版本）
+	3.检查django是否安装成功
+           1. pip list
+           2.进入交互模型
+	       import django
+	       django.get_version() 查看到对应版本,则证明安装成功
+		   
+3.创建一个django web项目
+	1.准备一个目录
+		选择一个位置创建目录 （Desktop-soft-里创建）
+		django-admin startproject 项目名
+	2.启动服务器测试 
+	     进入到项目目录下 执行 python manage.py runserver 
+	      可以开启服务器,开启后再浏览器中可以访问	
+    3.创建一个应用(在项目目录下开启)
+	     python manage.py startapp 应用名 
+	4.用pycharm打开
+	   直接pycharm.sh打开,选择open,选择manage.py的父目录打开即可
+	   
+4.常用配置
+       1.编码,快捷键,字体,
+       2.注意虚拟环境中python配置
+         file ---setting ---project:项目名---project interpreter ----
+		下拉选择 show all ----右上角添加按钮----ex__iting enviremnet ---选中虚拟环境 ---应用到所有的项目 
+		确定既可
+		注意:虚拟环境的目录 /home/用户/.local/virtualenvs/虚拟环境名/bin/python
+		3.在setting中修改
+		ALLOWED_HOSTS: 允许访问的主机地址,
+	               默认只能本机访问, 
+	              ["*"] 表示所有的地址都可以访问
+		LANGUAGE_CODE 配置语言的  中文: "zh-hans"
+		TIME_ZONE  配置时区的      中国: "Asia/Shanghai"
+		3.项目下新建目录（需配置）：static 
+			static 中新建目录文件：js css img upload 等
+		4.配置
+			# 指定静态资源路径
+			STATICFILES_DIRS =[os.path.join(BASE_DIR),'static']
+			# 配置文件上传的目录
+			MEDIA_ROOT = os.path.join(BASE_DIR,'static/upload')
+		5.静态资源使用方式
+			1.在项目的目录下创建static目录
+		    2.在setting中配置了才可以使用
+			 配置: 在setting的后面追加: STATICFILES_DIRS = [static的路径os.path.join(BASE_DIR,"static")]
+		   
+		    3.在模板html中
+			    1.在html的首行加上 {% load static %}
+		        2.使用:  {% static '相对于static的路径' %}
+					如:js       <script type="text/javascript" src="{% static '相对于static的路径' %}"></script>
+				    或者:{# 在django中不推荐使用   <script type="text/javascript" src="/static/js/bind_polyfill.js"></script>#}
+			
+   
+    3.静态资源可以直接通过url访问
+       
+         格式:http://地址:端口号/static/资源路径
+	  如: http://10.31.160.135:8003/static/img/xxx.jpeg
+		6.模板的使用
+			1.需自己建
+			2.创建位置:
+			1.直接在应用下创建该目录,应用下的html模板,能直接在应用下的views中使用,一般也只给自己的应用使用
+			2.直接在项目下创建该目录,在项目下创建的改目录,所有的应用中的views都可以方便的使用
+        
+			3.若果是项目下的templates目录,需要配置才可以使用
+				配置:1.在setting的TEMPLATES中配置
+				如:  'DIRS': [os.path.join(BASE_DIR,'templates')],
+               
+			2.项目不能识别templates为模板目录,需要将该目录标记成模板目录才可以使用
+                 标记:  templates目录右键 ---- mark Directory  as ---- template Folder 
+				看到目录变成紫色即可
+			**3,如果遇到template不能识别,重新做以上操作
+6.连接mysql数据库（也可连接其他的数据库）
+	1.导入库（项目下的__init__文件中导入）
+	import pymysql
+	pymysql.install_as_MySQLdb()
+	2.在数据库中创建该库（在终端命令下）
+	create database 数据库名 charset='utf8';
+	3.配置mysql连接(setting中的database中)（需要把之前的两行注释掉）
+	'ENGINE': 'django.db.backends.mysql',  设置驱动
+        'NAME':"week01",  设置数据库名
+        'USER':'root',    设置mysql数据库用户名
+        'PASSWORD':'123',  设置mysql数据库用户名密码
+        'HOST':'localhost',  设置主机地址
+        'PORT':3306,  设置端口号
+	4.连接mysql数据库
+        点击左侧database --- + -----data source ----数据库类型(如:mysql) ----- 设置 账号,密码,主机,(注意: 如果对mysql设置远程连接,需要使用远程连接的账号密码)
+	    ----test connect ---- ok 即
+	5.测试程序能否能连
+       1.执行迁移
+          python manage.py makemigrations
+	  python manage.py  migrate
+       2.看到自动生成的表即可	
+		
+		
+6.根据需求配置
+	1.# 缓存数据库配置
+	CACHES = {
+		'default': {
+			'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+			'LOCATION': 'my_cache_table',
+		}
+	}
+
+	# https://django-redis-chs.readthedocs.io/zh_CN/latest/
+	2.# 配置redis数据库缓存
+	CACHES = {
+		"default": {
+			"BACKEND": "django_redis.cache.RedisCache",
+			"LOCATION": "redis://127.0.0.1:6379/1",
+			"OPTIONS": {
+				"CLIENT_CLASS": "django_redis.client.DefaultClient",
+			}
+		}
+	}
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

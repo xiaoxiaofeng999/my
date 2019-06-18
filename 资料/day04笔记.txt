@@ -1,0 +1,266 @@
+1.templates用来放置模板文件
+   1.templates 该目录本身没有,如果我们需要使用,需要我们自己创建,该目录名通常为templates
+   2.创建位置:
+        1.直接在应用下创建该目录,应用下的html模板,能直接在应用下的views中使用,一般也只给自己的应用使用
+        2.直接在项目下创建该目录,在项目下创建的改目录,所有的应用中的views都可以方便的使用
+        
+       3.若果是项目下的templates目录,需要配置才可以使用
+          配置:1.在setting的TEMPLATES中配置
+	         如:  'DIRS': [os.path.join(BASE_DIR,'templates')],
+               
+	       2.项目不能识别templates为模板目录,需要将该目录标记成模板目录才可以使用
+                 标记:  templates目录右键 ---- mark Directory  as ---- template Folder 
+		       看到目录变成紫色即可
+        **4,如果遇到template不能识别,重新做以上操作
+    	
+ 2.模板语法
+    1.变量
+       1.变量通常在views中定义,然后传递给模板,模板中直接使用就可以
+       2.使用的语法: {{ 变量名 }}    用两个{ 括起来
+       3.注意: 如果模板板中的变量没有定义就使用了, 模板不会报错,当作空使用
+    2.  .  语法
+       1.  . 可以用来调用属性 
+            格式:  对象名.属性名  
+       2.   .  可以用来调用方法
+            格式: 对象名.方法名    注意不加()
+       3.   如果. 用在集合(list,tuple...)的 后面,可以连接索引, 可以获取索引位置的值 
+            格式: 集合.索引    相当于python的:  集合[索引]
+       4. 如果 . 用在字典的后面, 可以连接 可以,可以获取key对应的值
+           格式: 字典.key    相当于python的:  字典[key]
+    
+    3. for 循环    注意: 有结束标签   {% endfor %}
+      1.格式1: 
+             {% for 变量名 in 集合名 %}
+		 循环体
+	     {% endfor %}
+
+      2.格式2:
+
+		{% for 变量名 in 集合名 %}
+		    循环体
+		{% empty %}
+		     如果集合为空,应该显示的内容
+		{% endfor %}
+      3.forloop  循环的技术器
+           forloop.counter  从1开始计数
+	   forloop.counter0  从0开始计数
+	   forloop.first  是否是第一个数据
+	   forloop.last  是否是最后一个数据
+	   forloop.revcounter  从1开始计数, 倒着计数,即最大数是第一个
+	   forloop.revcounter0  从0开始计数, 倒着计数,即最大数是第一个
+
+
+    
+   4.判断语句
+       1.格式1:
+            {% if 判断表达式 %}
+			
+	    {% endif %}
+
+
+       2.格式2:
+            {% if 判断表达式 %}
+	            如果满足条件就执行表达式1
+		{% else %}	
+                   否则执行表达式2
+	    {% endif %}
+
+
+       3.格式3:
+	   {% if 判断表达式1 %}
+	            如果满足条件1就执行表达式1
+                {% elif 判断表达式2 %}
+                    如果满足条件2就执行表达式2 
+		{% else %}	
+                   否则执行表达式3
+	    {% endif %}
+
+	
+       4.格式4:  判断2个值是否相等
+         {% ifequal valu1 value2 %}
+	     如果value1 等于value2执行表达式
+
+	 {% endifequal %}
+         注意: 当value1与value2值相等,且类型也一样的时候才成立
+       
+       5.格式5:    判断2个值是否不相等
+            {% ifnotequal valu1 value2 %}
+	     如果value1 等于value2执行表达式
+
+	    {% endifnotequal %}
+    5.比较运算符
+       >
+       >=
+       <=
+       ==
+       !=
+
+    **表示范围的语法结果一般有结束标签,一般是{% 括弧
+
+ 5.注释:
+     {# 这是模板语法中的单行注释  快捷键:  ctrl + / #}
+	{% comment %}
+	    这是多行注释  快捷键: ctrl + shift + /
+	{% endcomment %}
+
+	<!--  这是HTML的注释   -->
+  
+ 
+
+ 6.其他
+    1.加法/减法运算
+       加法:   格式: {{ value|add:值  }}     value + 值
+       加法:   格式: {{ value|add:-值  }}    value - 值
+    
+    2.乘法/除法运算
+       格式: {% widthratio value 分母 分子 %}
+             相当于  value * 分子/分母
+
+       除法  {% widthratio value 分母 1 %}
+       乘法  {% widthratio value 1   分子 %}
+
+   3.是否整除某个数 
+       格式:{{ value|divisibleby:值  }}    value是否能整除 值
+     需求:隔行换色
+      {% if forloop.counter0|divisibleby:2  %} 
+   4.大小写转换 
+      转换成小写:{{ value|lower }}
+      转换成大写:{{ value|upper }}
+   
+   5.字符串拼接
+       字符串拼接: {{ 集合|join:"拼接的字符" }}
+
+7.转意字符
+    1.问题:默认情况下,如果views视图函数传递给模板的是一个 html格式的字符串, 默认模板中html标签不会生效,而有时候需要html标签生效
+   
+    2.使得标签生效:
+       1.  在模板中  使用{{ 变量|safe }}    是得变量的字符串中的html标签生效
+       
+       2. 使用 autoescape 
+         {% autoescape on %}
+	{#     这里面的内容就是不生效的HTML字符串#}
+	     {{ strHtml }}
+
+	{% endautoescape %}
+
+	{% autoescape off %}
+	{#     这里面的内容就是可以生效的HTML字符串#}
+	     {{ strHtml }}
+
+	{% endautoescape %}
+
+8.模板的继承 --- 子模板可以继承一个父模板,即可以继承父模板的css,html,js  
+     1.如何继承:
+        1.定义一个父模板base.html, 通常在父模板写一些通用的功能
+	2.定义一个字模板index.html,在子模板的首行写 {% extends '父模板路基' %} 既可以继承父模板中的所有的css.html.js
+     2.在继承中可以block来在父模板中挖坑,挖坑可以给子类内容设置一个预留位置,方便子类在对应的位置填充内容
+         1.在父类中挖坑
+	    在需要填充子模板内容的地方 写上 :
+	       {% block 坑的名字  %}
+
+	       {% endblock %}
+	 2.在子模板中填坑 
+	       {% block 坑的名字  %}
+			填充的内容
+	       {% endblock %}
+	 3.第一次表示是挖坑
+	   第二次表示填坑
+	   第3-n次会覆盖之前的坑 
+         4.如果填坑的时候,希望保留父模板的内容,可以在 填坑的首行加上   {{ block.super }}
+	   如: {% block head %}
+		{#    保留父模板的内容 #}
+		    {{ block.super }}
+		    <h1>这是三级头盔</h1>
+		{% endblock %}
+         5.可以挖多个坑
+	 6.填坑的时候不需要按照顺序
+	 7.没有填的坑,就是空内容
+    
+       好处:1.html代码可以复用  2.可以灵活的写内容  
+    3.思想:
+        1.化整为零  ---- 将一个完整的html用block划分成很多的小块, 开发者只需要考虑填充对应的小模块即可...
+      
+	2.化零为整  ---- 将多个零散的html用 include在一个html中包含进来, 可以拼接成一个完整的html	
+	       {#    将零散的html 拼接成一个完整的html #}
+		    {%  include 'head.html' %}
+		    {%  include 'bannar.html' %}
+		    {% include 'foot.html' %}
+
+
+   
+9.模板的简单加载原理
+     # 模板的加载过程
+    def loadTem(request):
+     1.# 先将模板加载到views函数中
+    template = loader.get_template("loadTem.html")
+      2.# 把数据给模板,并转换成html形式的字符串
+    htmlData = template.render(context={"content":"内容xxxxxx"})
+     3.# 把数据作为相应体,给客户端   html本质就是字符串
+      return  HttpResponse(htmlData)
+
+
+    # return  render(request,"loadTem.html",context={"content":"内容"})
+
+
+    
+  
+
+-----------------------------------------------------------------------------------------
+
+url --- 路由, 根据url地址分配视图函数来处理不同的请求
+
+1.urls分离,见前天的笔记
+
+2.django中urls的匹配规则
+   url(正则表达式,视图函数)
+   1.遵从python中正则表达式的匹配规则,按照正则匹配成功后,会调用对应的视图函数
+   2.在django的urls中会有很多个url,路径是从上至下匹配,如果其中的一个没有匹配成功则会继续向下匹配
+                                                     ,如果匹配成功,会调用对应的实函数, 
+					注意:匹配成功后不会继续匹配了
+
+    ** 为了防止匹配冲突,最好在正则的 后面 加上特定的字符 如: $ 结束, 最好用 /
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

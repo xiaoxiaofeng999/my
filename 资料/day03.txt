@@ -1,0 +1,277 @@
+1.关联关系
+   1.一对一
+   2.一对多
+   3.多对多
+
+
+
+2.一对一关系  
+   场景:  人 (1个)---- 身份证 (1个)     1:1
+
+   外键关联格式:  关联的属性 =  models.OneToOneField(关联表的类名)     django会自动的去外键关联
+
+   1.设计模型
+      1.人
+        name 姓名
+	age  年龄
+	....
+      2.身份证    idCard 
+        idNumber 身份证号
+	address  地址
+	sex     性别
+	.....
+        person --- 外键 --- OneToOneField   一对一 
+	例: i_person = models.OneToOneField(Person)
+   
+   2.插入数据
+     1.人
+         person.save()
+     2.身份证
+         #   先找到需要绑定的人
+	    person = Person.objects.filter(p_name="三胖胖3").first()
+	#     外键  --- 绑定对象
+	    idcard.i_person = person
+
+	    idcard.save()
+   3.修改
+   4.删除
+      1. 如果删除的是主表中的数据, 如果在从表中没有对应的数据,会直接删除该数据
+                                 , 如果在从表中存在对应的数据,会连同从表中的数据一同删除
+      2.如果删除的是从表中的数据,会直接删除该数据,主表中的数据不会受影响 
+    
+
+ 
+   5.表的关系(主 --- 从)
+      主表(被动连接的一方)  ----  从表(主动连接的一方)
+   
+   6.设置外键关联的数据的保护模式
+       on_delete的模式:
+       models.CASCADE   默认模式,      如果删除的是主表中的数据,如果在从表中存在对应的数据,会连同从表中的数据一同删除
+       models.PROTECT   保护模式,当删除主表的数据的时候,如果有对应的从表数据,则不能删除,程序报错, 
+                                                       ,如果没有对应的从表数据,则正常删除
+       models.SET_DEFAULT  设置为默认值,当删除主表的数据的时候,如果有对应的从表数据,则主表数据直接删除,从表对应的外键自动设置为默认值
+       models.SET_NULL     设置为默认值,当删除主表的数据的时候,如果有对应的从表数据,则主表数据直接删除,从表对应的外键自动设置为空值
+       models.SET(value)   设置为默认值,当删除主表的数据的时候,如果有对应的从表数据,则主表数据直接删除,从表对应的外键自动设置为指定的值
+
+       如: i_person = models.OneToOneField(Person,on_delete=models.PROTECT)
+ 
+2.一对多  ---- ForeignKey
+   场景: 人(1个)----爱好(多个)    1:N
+   1.设计表:
+      1.person表
+      2.hobby爱好表
+         name 爱好名
+	 price 爱好的花费
+         .....
+	 外键:
+	 person人 = models.ForeginKey(类名)
+    
+    2.添加数据:
+         1.人
+	 2.爱好
+	   可以给一个人绑定多个爱好
+    3.修改
+    4.删除数据
+       1.如果删除的是主表中的数据,如果从表中没有对应数据,直接删除该主表数据
+                                 ,如果从表中有对应的数据,会连同从表中对应的(多条)数据一同删除
+       2.如果删除的是从表中的数据,会直接删除该数据,主表中的数据不会受影响   
+
+    5.设置外键关联的数据的保护模式  ---跟一对一类似
+      
+        
+3.多对多 
+   场景: 
+   用户(1个) ----- 商品(多个)
+   商品(1个) ------用户(多个)
+   用户(多个)---  商品(多个)
+   
+   1.设计模型
+      1.buyer 用户
+         name 名字
+	 age  年龄
+	 .....
+
+      2.goods 商品  (相对不重要)
+         name 商品名
+	 price 商品价格
+
+	  = models.ManyToManyField()
+	  如: 
+	   g_buyer = models.ManyToManyField(Buyer)
+     
+      3.第三张表用来维护两张表的关系---django可以自动生成
+          外键关联用户id
+	  外键关联商品id
+   
+   2.添加数据
+      如:
+		  # 获得一个购买者
+	    buyer1 = Buyer.objects.filter(pk=1).first()
+	    buyer2 = Buyer.objects.filter(pk=2).first()
+	    buyer3 = Buyer.objects.filter(pk=3).first()
+
+	    # 获得一个商品
+	    goods = Goods.objects.filter(pk=2).first()
+
+	    # goods = Goods()
+
+	    # 添加数据,一对多关系时,用add 表示添加, 且可以添加多个
+	    goods.g_buyer.add(buyer1)
+	    goods.g_buyer.add(buyer2)
+	    goods.g_buyer.add(buyer3)
+
+	    goods.save()
+	      
+    3.删除数据
+          1.主表(购买者)
+	        
+	  2.主表(商品) 
+          
+	  3.(从表)自动生成的表
+          如果删除的是主表中的数据,如果从表中没有关联的数据,直接删除
+	                           ,如果从表中有关联的数据,会连同从表中的关联数据(多条)一同删除
+          
+        
+          4作业:用ForeginKey实现多对多关系,并进行一些数据的操作
+  
+    
+4.查询
+    1.一对一 
+	0.自己查询自己,直接查找到对应的对象既可
+        1.根据从表中的信息查询主表信息
+		从表中有一个外键关联的字段,该字段与模型中的属性对应,  我们可以直接通过该 外键属性 直接获取到关联的数据对象	
+		如: # 可以直接获得关联的数据对象
+                person = idcard.i_person
+	
+	
+	2.根据主表信息查询从表信息 
+               django在创建主表与从表关系的时候,会 自动 为主表对应的模型,创建一个隐式属性,该隐式属性就是对应的从表数据对象
+	       格式: 主表模型对象.从表模型名的全小写     即直接可以获得从表数据
+	       如: idcard = person.idcard
+
+    2.一对多
+        1.根据从表中的信息查询主表中的信息
+            可以直接根据外键属性获取对象
+
+	2.根据主表中的信息查询从表中的信息
+             格式: 主表模型对象.从表模型名的全小写_set.查询方法   既可以直接获得从表中对应的多条数据
+	      如:  hobbys  = person.hobby_set.all()  
+
+    3.多对多
+         1.根据从表中的信息查询主表(多条)中的信息  
+             格式:  从表模型对象.外键属性.查询方法
+	     如:   buyers = goods.g_buyer.all()
+
+          2.根据主表中的信息查询从表(多条)中的信息
+	    格式:    主表模型对象.从表模型名的全小写_set.查询方法 
+	    如:      goodses =  buyer.goods_set.all()
+
+
+5.django中的隐式属性,显示属性
+   1.显示属性
+       开发人员直接定义的属性就是显示属性
+
+   2.隐式属性
+      在django中,django为了便于开发提供了很多的隐式属性(django自带的),这些隐式属性有很多强大的功能, 如: "查询",创建.... 
+      
+6.自定义的manger
+需求1: 方便的创建测试数据
+
+   1.自定义manager的使用
+      1.在models中定义一个类(myManager)继承 Manager    from django.db.models import Manager
+      2.在类中既可以定义自己的方法
+         如:   方便的创建测试数据
+	class MyStudentManager(Manager):
+	    def createTestStudnet(self,name,age):
+		student = Student()
+		student.s_name = name
+		student.s_age = age
+		# .....
+		student.save()
+      3.在对应的模型类中添加一个属性 ,该属性值为 自定义manager对象
+         如:  mymanager = myManager()
+          注意:Manger对象就是我们平时常用的obejcts对象,如果自己定义manager对象,那么objects对象不能使用了
+				Manager()会覆盖原先的object对象
+				# type object 'Student' has no attribute 'objects'
+	      *应该使用自己定义manger对象，添加新的功能，那么新的类必须要继承Manager
+      如:
+      4.使用
+           如:
+           Student.mymanager.createTestStudnet("死胖子",34)
+         格式: 类名.自己定义的manger对象名.方法()
+
+
+需求2: 过滤掉已经被逻辑删除的数据
+	一次性删除	    students = Student.mymanager.all().exclude(s_isdelete=True)
+
+     #   过滤掉所有逻辑删除的数据
+#   方法的重写 所有的查询方法
+    def get_queryset(self):
+       return super(MyStudentManager, self).get_queryset().exclude(s_isdelete=True)
+   以上方法需要在myManger中定义,定义后所有的查询方法,会自动的过滤掉逻辑删除的数据
+   
+   不要忘记将返回结果，不反悔报错NoneType' object is not iterable
+   
+
+
+     
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

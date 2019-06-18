@@ -1,0 +1,158 @@
+Django的使用:
+
+1.创建一个项目
+   1.设置环境
+	1.创建对应的虚拟环境
+	    1.命令:  mkvirtualenv  -p /usr/bin/python3.5  hz1805
+             查看所有虚拟环境 	 workon 
+    
+            退出虚拟环境 deactivate 
+            删除虚拟环境  rmvirtualenv  hz1805
+            使用虚拟环境 workon  虚拟环境名
+       2.安装 django
+            如果pip版本较老,可以先升级:  pip install --upgrade pip
+           pip install django==1.11.7
+       3.检查django是否安装成功
+           1. pip list
+           2.进入交互模型
+	       import django
+	       django.get_version() 查看到对应版本,则证明安装成功
+
+       
+    2.创建一个django web项目
+       1.创建项目
+         1.创建一个目录 mkdir 目录名
+	 2.在对应的目录下创建项目 
+             django-admin  startproject  项目名 
+	 3.启动服务器测试 
+	     进入到项目目录下 执行 python manage.py runserver 
+	      可以开启服务器,开启后再浏览器中可以访问
+         4.创建一个应用(在项目目录下开启)
+	     python manage.py startapp 应用名 
+	    
+        5.用pycharm打开
+	   直接pycharm.sh打开,选择open,选择manage.py的父目录打开即可
+
+    3.常用配置
+       1.编码,快捷键,字体,
+       2.注意虚拟环境中python配置
+         file ---setting ---project:项目名---project interpreter ----
+	 下拉选择 show all ----右上角添加按钮----ex__iting enviremnet ---选中虚拟环境 ---应用到所有的项目 
+	 确定既可
+	  注意:虚拟环境的目录 /home/用户/.local/virtualenvs/虚拟环境名/bin/python
+    4.目录介绍
+       1.app --- 应用名, 可以自定义,也可以创建,可以创建多个(小项目)
+          1.migrations 目录, 迁移目录,是自动生成的, 通常是生成数据库表的时候产生中间文件
+          2.__init__.py 初始化包的时候调用,是一个包的标识
+	  3.admin.py  管理项目数据库的
+	  4.apps  管理应用的
+          **4.models.py models数据模型, 通常用来方便的操作数据库
+          5.tests.py 测试的时候用, 往往开发完成的时候测试人员使用
+	  **6.views.py 视图函数, 通常用来处理业务逻辑 python代码
+        2.week01--- 项目名, 放置管理整个项目的一些配置文件
+	  1.setting.py 整个项目的配置
+	  **2.urls.py  路由, 用来分发请求的url,将对应的url分发到对应views处理
+          3. wsgi.py 是uwsgi服务器的配置文件,开发完成上线的时候使用 
+	3.db.sqlite3 数据库  
+        4.manage.py 项目的配置文件,通常启动,生成数据库的时候使用,自动生成的
+	自己创建的**5.templates目录  模板,通常用来放置html模板
+        
+     5.settting  文件介绍
+        BASE_DIR : 项目的跟路径
+	DEBUG :    是否开启调试模式,  开发的时候开启, True 开启,false关闭
+	ALLOWED_HOSTS: 允许访问的主机地址,
+	               默认只能本机访问, 
+	              ["*"] 表示所有的地址都可以访问
+
+       INSTALLED_APPS  已经安装的应用, 注意: 自己创建的应用需要添加进去
+       MIDDLEWARE  中间健
+       TEMPLATES  模板文件的配置
+       DATABASES  配置数据库的
+       LANGUAGE_CODE 配置语言的  中文: "zh-hans"
+       TIME_ZONE  配置时区的      中国: "Asia/Shanghai"
+       STATIC_URL 配置静态资源的
+     6.外网访问开发服务器
+        1.如果是宿主机访问虚拟机需要设置网络 为 桥接模式 
+	2.启动服务器:
+	   1.在setting中设置 ALLOWED_HOSTS为 ["*"]
+	   2.使用 python manage.py  runserver 0.0.0.0:端口号   2018/9/10来开启
+	      则即可使用外网访问
+            
+	    
+	    **命令 :  python manage.py  runserver   表示默认只能自己访问
+
+    
+2.demo-helloworld 
+    流程: urls ---->  views 视图函数 ----> template html文件  --->views 视图函数响应
+    开发流程: 倒着来   目的  
+       1.template 模板中写到要展示的html网页
+       2.views 视图函数中响应一个html,  如: return render(request,"模板名")
+       3.urls 将url路径与视图函数对应即可
+
+3.model 模型
+   作用:  model模型, 通常用来方便的操作数据库: 1.可以方便的创建表 2.方便的增删改查 3.可以方便的在views中使用
+     1.设计表:  
+          字段1,字段2,.......  --->  sql: create table 表名(字段 字段类型,........)
+
+         在django中直接写对应model模型,就可以自动的生成表
+         如:
+	 # 定义一个学生类
+	# 注意: modle中定义的类需要继承 models.Model
+	class  Student(models.Model):
+	    s_name = models.CharField(max_length=50)
+	    s_age = models.IntegerField(default=18)
+
+     2.需要执行迁移才能自动生成对应的表
+        1.生成迁移文件
+         命令:  python  manage.py  makemigrations
+	2.执行迁移文件
+	  命令: python  manage.py migrate 
+        3.执行迁移后,刷新后就可以看到自动创建的表
+	   注意；首次执行迁移时，还会创建django项目需要的表
+     3.如何连接数据库:
+        pycharm 右侧----->database --->  +  ---->import from source  ---->test connect 如果不能点,需要点击下方的downlosd下载对应的驱动,--->再点击test connect--->成功后确定即可连接上
+     4.如何使用pycharm管理数据库
+        1.双击表名可以查看 表的所有数据
+	2.插入/删除 一条数据  点击表的上方的 +/-按钮, 注意操作完后必须提交(db绿色向上箭头)才可生效
+        3.注意:pycharm的数据操作后不会自动的刷新,开发测试数据的时候,需要手动刷新,来查看数据
+	4.ddl按钮可以查看表的创建语句
+	5.黑色图标的按钮, ---> new console --->可以输入sql语句 --->绿色按钮是执行
+	    可以方便的操作数据库
+
+    5.插入数据 ---见代码
+    6.查询数据 --- 见代码
+
+
+4.流程图总结 --见图
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

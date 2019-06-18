@@ -1,0 +1,249 @@
+1.在django中静态资源的使用
+   1.静态资源: 如:css,js,img,文件....   在django中放在static目录下的
+   2.使用: 
+       1.在项目的目录下创建static目录
+       2.在setting中配置了才可以使用
+         配置: 在setting的后面追加: STATICFILES_DIRS = [static的路径os.path.join(BASE_DIR,"static")]
+       
+       3.在模板html中
+          1.在html的首行加上 {% load static %}
+	  2.使用:  {% static '相对于static的路径' %}
+	      如:js       <script type="text/javascript" src="{% static '相对于static的路径' %}"></script>
+	         或者:{# 在django中不推荐使用   <script type="text/javascript" src="/static/js/bind_polyfill.js"></script>#}
+			
+   
+    3.静态资源可以直接通过url访问
+       
+         格式:http://地址:端口号/static/资源路径
+	  如: http://10.31.160.135:8003/static/img/xxx.jpeg
+
+
+2.动静态资源分离 
+     	1.静态资源
+		1.在django项目中放在static目录的下就是静态资源 如: css,js,img,文件,html
+		2.注意如果html放在staic就是静态的
+
+	2.动态资源
+	    1.一些可以动态运行的代码,如: python, template语言下的html
+	    2. template语言下的html其实django的一种特殊的语言
+
+
+
+
+
+3.验证码---- 提高安全性的
+    1.特点: 1.时效性  2.随机性  3.安全    4.模糊  
+    2.使用:
+       1.安装pillow模块来处理
+          pip install pillow
+       2.材料: 画布, 画笔,...
+       3.代码画验证码:
+            # 创建一个画布
+	    # mode 画布模式, "RGB"
+	    # size 画布的宽高
+	    # color表示颜色 如: (33,33,33)即(红,绿,蓝) 每个值的范围是0-255,
+	    image = Image.new("RGB",(200,70),createColor())
+
+	    # 创建一个画笔
+	    # 参数1是绑定的画布
+	    # 参数2是模式
+	    imageDraw = ImageDraw.Draw(image,"RGB")
+
+
+	    # 设置字体
+	    imageFont = ImageFont.truetype("static/fonts/ADOBEARABIC-ITALIC.OTF",size=50)
+
+	    # 画
+	    # xy,  画的起始位置(坐标)
+	    # text  画的内容
+	    # fill = None,  填充的颜色
+	    # font = None,  设置字体样式及大小的
+	    # imageDraw.text((5,10),"nizhenliao",fill=createColor(),font=imageFont)
+
+	    charSource = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+
+	    # 一个一个的写
+	    # 随机生成一个字母数字, 随机4次
+	    for i in range(4):
+		# 随机选一个字母
+		ch = random.choice(charSource)
+		imageDraw.text((20+i*50,10),ch,fill=createColor(),font=imageFont)
+
+	    # 给验证码图片上画一些点,使其模糊
+	    for i in range(2000):
+		x =  random.randint(0,200)
+		y = random.randint(0,70)
+		imageDraw.point((x,y),fill=createColor())
+
+	    # 创建一个字节流
+	    import io
+	    byteIO = io.BytesIO()
+	    # 把图片保存到字节流中去
+	    image.save(byteIO,"png")
+
+	    return  HttpResponse(byteIO.getvalue(),"image/png")
+
+4.验证码功能
+    1.展示
+    2.点击刷新
+      1.给验证图片设置点击事件
+      2.每点击一次重新请求一次
+      3.注意: 如果我们每次刷新做的事同样的请求,浏览器会认为请求的是同一个内容,会自动的使用上一次的内容(缓存), 导致验证码不能刷新
+        解决:使得每次请求url都发生变化
+    3.如:
+        //登录页 验证码点击刷新
+	$(function () {
+	//      设置点击事件
+	    $("#verificationCode").click(function () {
+		 // alert("xxxxxx")
+		$(this).attr("src","/day07/getVerificationCode"+Math.random())
+	    })
+
+	})
+
+5.验证验证码 -----即 在请求验证码的时候保留一个验证码,用户提交的时候会提交一个验证码, 如果两个验证码一致则匹配成功
+      1.请求验证码的时候保留验证码到session
+           # 服务器保存一份验证码
+	    request.session["verCode"] = verCode
+	    # 设置过期事件  单位秒
+	    request.session.set_expiry(30)
+		   
+     2.提交的时候验证验证码
+            # 获取用户输入的验证码
+	    verCode1 = request.GET.get("verCode")
+	    # 与服务器保存的验证码对比
+	    verCode2 = request.session.get("verCode")
+
+	    # 空判断
+
+	    if verCode1.lower() == verCode2.lower():  #匹配成功
+
+
+
+
+6.图片的上传
+     案例: 用户注册图片上传
+
+  1.设计模型  
+      u_name 用户名
+      u_age  密码
+     ....
+      u_img   头像 
+       
+      # 保存头像 ---- 本质上保存的是文件的路径
+    # 目录 : static/upload  /icon
+    # upload_to 表示指定图片上传的相对路径名, 及文件上传的路径的前缀
+    u_img = models.ImageField(upload_to="icon")
+
+    注意:上传目录需要配置后才能使用
+        1.在static目录下创建文件上传放置目录upload
+	2.需要在setting中配置
+	    在setting的后面追加 :
+            MEDIA_ROOT = os.path.join(BASE_DIR,"static/unload")
+	   
+   
+   2.表单
+      1.上传文件的标签:
+         <input type="file" name="img"> <br/>
+      2.表单提交需要用post请求.还需要设置数据的编码类型,如: enctype="multipart/form-data" 
+
+   3.服务器处理
+     1.文件的接收:
+          # 获取文件数据
+        data = request.FILES.get("key")
+     2.保存到数据库
+       
+       user.u_img = data    直接设置file获取的值即可,django会自动的处理
+
+    
+    4.展示数据库存储的图片
+       1.获取图片的路径
+          # print(user.u_img) #数据中的相对路径
+	# print(user.u_img.path)  #绝对路径
+	# print(user.u_img.url) #相对路径
+    
+       imgPath = "/static/upload/" + user.u_img.url
+      2.传递要给模板即可
+
+
+
+7.自定义文件上传
+      # 获得文件
+    uploadFile =  request.FILES.get("img")
+    # 文件的写入操作
+    # 服务器文件的名字通常唯一的
+    # 设置文件名及上传路径
+    filePath = os.path.join(settings.MEDIA_ROOT,createFileName()+".jpg" )
+    # 以写的方式打开文件
+    with open(filePath,mode="wb") as wf:
+        # 将文件分成很多分写入
+        for i in uploadFile.chunks():
+            wf.write(i)
+            wf.flush()
+
+8.中间健 middleware
+     概念: 是一个轻量级的，底层的插件，可以介入Django的请求和响应过程（面向切面编程）
+    
+     1.使用:
+        1.在项目的目录下新建目录middleware
+	2.在middleware目录下新建一个 模块A
+	3.在模块A中定义一个中间键类B,B类需要继承 MiddlewareMixin
+	4.在B类中重新对应流程的方法
+	5.需要setting中配置
+	   在middleware中添加: 目录名middleware.模块名A.类名B   即可
+     2.常用的方法:
+         1.def process_request(self,request):
+	  该方法在进入url路由前执行,在该方法中可以使用 return 响应体 来终止向后执行,直接响应客户端,
+          所有的url请求都会执行它
+         场景: 1.反爬虫   2.黑名单/白名单   3.vip区别...
+          
+	  如: 
+	    def process_request(self,request):
+		print("***********************")
+		# 获得访问地址
+		print(request.path)
+		# 获得访问用户的ip地址
+		print(request.META["REMOTE_ADDR"])
+		addr = request.META["REMOTE_ADDR"]
+		# 黑名单
+		if addr in ["10.31.160.24","10.31.160.229"]:
+		    return HttpResponse("滚吧,不欢迎你")
+
+        2. def  process_exception(self, request, exception): 
+	  该方法在出现异常的时候执行,在该方法中可以处理跳过异常.使程序不出错
+	    def  process_exception(self, request, exception):
+#         当程序发生异常时,跳到首页
+         return HttpResponse("假装跳到首页了")
+	   
+
+
+  
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

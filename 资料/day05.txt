@@ -1,0 +1,202 @@
+url
+
+1.url传递参数 
+
+   1.非关键字参数
+     url地址访问格式:  /路径/路劲/参数
+     urls正则的定义:   /路径/路径/(参数匹配的正则)     
+     注意:1.如果要获取传递进来的参数,必须给对应的参数的正则加上 ()才可以提取,
+          2.如果url中参数参数,就必须在视图函数的形式参数上定义一个参数,用来接收,否则报错
+
+    如果需要传递多个参数:  urls正则的定义:   /路径/路径/(参数匹配的正则)/(参数匹配的正则n)   
+                        注意: 1. 接收的时候,也要定义多个形式参数用来接收url传递的参数 
+                              2.接收的参数 必须 与传递的参数一一对应
+   2.关键字参数  
+       urls正则的定义:   /路径/路径/(?P<别名>参数匹配的正则)/(?P<别名n>参数匹配的正则n)  
+       视图函数中接收     (request,别名n,别名)   注意: 形式名必须与别名对应
+   
+      好处:会自动的用关键字传递参数, 视图函数的形参就不需要一一对应了
+        
+
+2.模板中访问地址及传递参数
+      1.模板中使用连接
+           1.直接完整的url地址
+	      <a href="https://www.baidu.com/">百度</a>
+           2.使用相对路径
+	     <a href="../relation">相对路径</a>
+         **3.相对于主机的路径    ip:端口/路径
+	      <a href="/day05/relation">相对路径</a>
+      2.问题:  开发: 开发, 测试, Beta, 正式......  
+            开发的时候,url地址的路径可能会修改,修改后,在对应模板中的url地址都要进行修改,而实际开发中,一个url可能会被多处使用,
+	    修改起来工作量大,且容易出错
+      3.解决: url反向解析法
+            使用:
+	     1.在项目下的url中添加 namespace属性值作为标识
+	        如:  url(r"^axfxxxx/",include("day05.urls",namespace="day05")),
+                 格式:    url(r"^任意的路径名/",include("应用的urls位置",namespace="父标识名")), 
+
+            2.在应用的url中添加 name 属性作为标识
+	        如: url(r'relationxxx/', views.relation,name="relation"),
+	        格式 :  url(r'任意的路径名/', views.函数名,name="子标识名"),
+            
+	    3.在模板使用:
+	       如:  <a href="{%  url 'day05:relation' %}">相对路径</a>
+	        格式: <a href="{%  url '父标识名:子标识名' %}">相对路径</a>
+     4.反向解析---非关键字参数
+          如: <a href="{% url 'day05:urlParam' 2018 9 30 %}">反向解析携带参数测试</a>
+	     url: url(r'urlParam/(\d+)/(\d+)/(\d)', views.urlParam,name="urlParam"),
+           格式:   <a href="{% url '父标识名:子标识名' 参数1 参数2 参数n %}">  每个参数之间用空格隔开即可
+	   
+     5.反向解析 ----关键字参数
+         如: <a href="{% url 'day05:urlParam2' month=9 day=30 year=2019%}">反向解析携带参数测试-关键字</a>
+            url:   url(r'urlParam2/(?P<!-- <year> -->\d+)/(?P<!-- <month> -->\d+)/(?P<!-- <day> -->\d+)', views.urlParam2,name="urlParam2"),
+	 格式:  <a href="{% url 'day05:urlParam2' key1=value key2=value keyN=value %}">反向解析携带参数测试-关键字</a>
+	                      关键参数是 key=value的形式,key要与url中的别名对应,    每组参数用空格隔开
+
+    
+3.重定向----给用户的请求,换一个地址
+
+  0.HttpResponseRedirect 的简写形式是 redirect
+   1普通用法:
+        如: return HttpResponseRedirect("/day05/redirectRes")
+        格式:  return HttpResponseRedirect("重定向的路径")
+   
+   2.反向解析法 
+     1.不携带参数
+       如: return HttpResponseRedirect(reverse("day05:redirectRes"))
+          return HttpResponseRedirect(reverse("父标识:子标识"))
+      
+     2.携带非关键字参数
+        如: #     return HttpResponseRedirect(reverse("day05:redirectRes2",args=(2019,10,30)))
+       格式:  return HttpResponseRedirect(reverse("day05:redirectRes2",args=(value1,value2,valueN)))
+
+
+     3.携带关键字参数
+         return HttpResponseRedirect(reverse("day05:redirectRes3",kwargs={"year":2020,"month":10,"day":10}))
+        格式:  return HttpResponseRedirect(reverse("day05:redirectRes3",kwargs={"key1":value1,"keyN":valueN))
+    
+  
+
+
+4.response 响应体 --- 响应该客户端的数据
+   1.HttpResponse("字符串形式的数据")   直接返回数据给客户端
+   2.render(request,"模板文件路径",context=参数)    将参数隐射到模板中,转换成html形式的字符串返回给客户端
+   3.HttpResponseRedirect("url地址"或者reverse(反向解析))  重定向,  将该请求转为其他的处理方式
+   4. JsonResponse(data)  将data转换成json格式的数据响应给客户端,
+        1.通常是将字典形式的数据转换成json
+	     # strJson = {'name':'张三','age':23}
+	    # # 需要字典形式的数据
+	    # return JsonResponse(strJson)
+	2.#    将model数据转换成Json数据
+
+	    persons = Person.objects.all().values()
+
+	    # 将queryset转换成列表
+	    persons = list(persons[:])
+	    #将列表转成JsonArray数据
+	    strData = json.dumps(persons)
+
+	    print(strData)
+	    print(type(strData))
+	    return  HttpResponse(strData)
+		     
+5.request 请求体
+    浏览器会自动的将请求 参数 封装成一个请求体,传递给服务器
+    一般只会查看参数,不能修改参数 
+   1.服务器会自动的将request传递给视图函数
+   2.request 重要的属性
+      request.path  获取请求的路径
+      request.method  获得请求的方式   GET 和 POST
+     
+      request.FILES  获取文件数据
+      request.cookie
+      request.session
+
+      request.GET 携带客户端get请求的参数
+      request.POST 携带客户post请求的参数
+  
+  3.get请求 
+      1.request.GET中就包含了get请求的参数,   request.GET是类似字典形式的数据
+      2.获取数据
+           1.request.GET["参数名"]  可以获取参数名对应的数据,如果参数名不存在,会报错
+	   2.request.GET.get("参数名",默认值)   可以获取参数名对应的数据,如果参数名不存在,不会报错,会使用默认值, 如果设置默认值,默认值为None
+	   3.request.GET.getList("参数名")  可以获取参数名对应的数据,如果是一个参数名对应多个数据,就可以使用getlist来获取,结果是list形式
+       
+  4.post请求
+      1.request.POST中就包含了post请求的参数,   request.POST是类似字典形式的数据
+      2.获取参数的用法与GET一致
+      3.注意: 在django的post请求中自带csrf验证,所有普通方式不能直接访问,服务器会拒绝访问
+           解决: 1.直接在表单中的首行 加上  {% csrf_token %} 即可, 表示加上csrf认证
+	         
+		 2.去掉django的csrf认证
+		     在setting的MIDDLEWARE中将 # 'django.middleware.csrf.CsrfViewMiddleware', 注销即可
+        
+   
+ 
+  
+6.model的继承及问题
+   0.数据库优化问题
+       1.尽量避免表关联 --- 数据操作效率低
+       2.尽量的避免io 
+
+    1.问题: 在django中,model可以使用继承即子类可以继承父类, 默认情况下,继承之后,使用迁移创建数据库表之后,默认会创建一个父类表,也会创建子类表,
+             但是子类表中的继承的属性,不会在子类表中,而是通过外键关联父类表获得\
+	     默认情况不合理,应该子类是一个独立的表,避免表关联
+            
+    2.解决:
+       将父类model定义成抽象的类即可
+       如: 在父model中添加
+             #使得model抽象华.不能实例化, 继承的子模型就不会再关联父表,子模型会是独立的表,且会继承父类的模型的属性,
+	    class Meta:
+		abstract  = True
+
+
+    3.迁移问题:  迁移的时候,可能会因为迁移文件已经有对应的记录,而使得迁移失败
+           解决: 1.删除对应的表(小心)
+	         2.在django-migrations表中删除对应的记录
+		 3.删除migrations目录下的迁移文件
+                 4.再次重新迁移即可
+          
+
+	         
+
+
+
+     
+
+
+
+
+
+
+
+
+  
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
